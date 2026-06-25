@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { saveRecentSearch, getRecentSearches } from '../lib/recentSearches';
@@ -49,8 +49,8 @@ export default function HomeScreen() {
 
         <RecentSearches
           searches={recentSearches}
-          onSelect={(q) => {
-            setQuery(q);
+          onSelect={async (q) => {
+            await saveRecentSearch(q);
             router.push({ pathname: '/results', params: { query: q } });
           }}
         />

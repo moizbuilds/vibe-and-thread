@@ -89,23 +89,35 @@ export default function ResultsScreen() {
           </View>
 
           {activeTab === 'online' && (
-            <FlatList
-              data={result.products}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => <ProductCard product={item} />}
-              contentContainerStyle={styles.list}
-              showsVerticalScrollIndicator={false}
-            />
+            result!.products.length === 0 ? (
+              <View style={styles.center}>
+                <Text style={styles.noResultsSubtitle}>No online results — check In-Store tab</Text>
+              </View>
+            ) : (
+              <FlatList
+                data={result!.products}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => <ProductCard product={item} />}
+                contentContainerStyle={styles.list}
+                showsVerticalScrollIndicator={false}
+              />
+            )
           )}
 
           {activeTab === 'instore' && (
-            <FlatList
-              data={result.stores}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => <StoreCard store={item} />}
-              contentContainerStyle={styles.list}
-              showsVerticalScrollIndicator={false}
-            />
+            result!.stores.length === 0 ? (
+              <View style={styles.center}>
+                <Text style={styles.noResultsSubtitle}>No in-store results — check Online tab</Text>
+              </View>
+            ) : (
+              <FlatList
+                data={result!.stores}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => <StoreCard store={item} />}
+                contentContainerStyle={styles.list}
+                showsVerticalScrollIndicator={false}
+              />
+            )
           )}
         </>
       )}

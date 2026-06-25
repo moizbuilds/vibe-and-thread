@@ -15,7 +15,7 @@ export function ProductCard({ product }: Props) {
           <Text style={styles.location}>📍 {product.inStoreLocation}</Text>
         )}
       </View>
-      <TouchableOpacity style={styles.button} onPress={() => Linking.openURL(product.productUrl)}>
+      <TouchableOpacity style={styles.button} onPress={() => Linking.openURL(product.productUrl).catch(() => {})}>
         <Text style={styles.buttonText}>View</Text>
       </TouchableOpacity>
     </View>

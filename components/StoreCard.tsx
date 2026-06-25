@@ -21,7 +21,7 @@ export function StoreCard({ store }: Props) {
         {store.matchReason && <Text style={styles.reason}>{store.matchReason}</Text>}
       </View>
       {store.mapsUrl && (
-        <TouchableOpacity style={styles.button} onPress={() => Linking.openURL(store.mapsUrl!)}>
+        <TouchableOpacity style={styles.button} onPress={() => Linking.openURL(store.mapsUrl!).catch(() => {})}>
           <Text style={styles.buttonText}>Directions</Text>
         </TouchableOpacity>
       )}

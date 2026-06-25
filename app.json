@@ -1,0 +1,15 @@
+{
+  "expo": {
+    "name": "Vibe&Thread",
+    "slug": "vibe-and-thread",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "vibeandthread",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": ["**/*"],
+    "ios": { "supportsTablet": false },
+    "android": { "adaptiveIcon": { "backgroundColor": "#ffffff" } },
+    "web": { "bundler": "metro" },
+    "plugins": ["expo-router"]
+  }
+}

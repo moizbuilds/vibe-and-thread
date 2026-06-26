@@ -58,7 +58,7 @@ function generateMatchReason(attrs: SearchAttributes): string {
 }
 
 export const searchClothing = onCall(
-  { secrets: ['GEMINI_API_KEY'], region: 'us-central1' },
+  { region: 'us-central1', invoker: 'public' },
   async (request) => {
     const description = request.data?.description as string;
     if (!description || description.trim().length < 3) {
@@ -68,7 +68,8 @@ export const searchClothing = onCall(
     let attrs: SearchAttributes;
     try {
       attrs = await extractAttributes(description);
-    } catch {
+    } catch (e) {
+      console.error('Gemini error:', e);
       throw new HttpsError('internal', 'Failed to analyse description');
     }
 
@@ -99,3 +100,5 @@ export const searchClothing = onCall(
     return { products, stores, suggestedTweaks };
   }
 );
+
+export { scrapeAllStores, scrapeStore } from './scraper/index';

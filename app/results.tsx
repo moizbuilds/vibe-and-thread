@@ -23,7 +23,7 @@ export default function ResultsScreen() {
     setError(null);
     searchClothing(query)
       .then(setResult)
-      .catch(() => setError('Something went wrong. Please try again.'))
+      .catch((e) => { console.error('SEARCH ERROR:', e); setError('Error: ' + e?.message); })
       .finally(() => setLoading(false));
   }, [query]);
 
@@ -31,24 +31,26 @@ export default function ResultsScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
+      {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.back}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.back} activeOpacity={0.7}>
           <Text style={styles.backText}>← Back</Text>
         </TouchableOpacity>
-        <Text style={styles.queryText} numberOfLines={1}>{query}</Text>
+        <Text style={styles.eyebrow}>RESULTS FOR</Text>
+        <Text style={styles.queryText} numberOfLines={2}>{query}</Text>
       </View>
 
       {loading && (
         <View style={styles.center}>
-          <ActivityIndicator size="large" color="#1a1a1a" />
-          <Text style={styles.loadingText}>Finding your style...</Text>
+          <ActivityIndicator size="large" color="#c96442" />
+          <Text style={styles.loadingText}>Finding your style…</Text>
         </View>
       )}
 
       {error && (
         <View style={styles.center}>
           <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity onPress={() => router.back()} style={styles.retryButton}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.retryButton} activeOpacity={0.85}>
             <Text style={styles.retryText}>Try again</Text>
           </TouchableOpacity>
         </View>
@@ -56,12 +58,17 @@ export default function ResultsScreen() {
 
       {noResults && !loading && (
         <View style={styles.center}>
-          <Text style={styles.noResultsTitle}>No exact matches found</Text>
-          <Text style={styles.noResultsSubtitle}>We couldn't find an exact match — try describing it differently</Text>
+          <Text style={styles.noResultsTitle}>No exact matches</Text>
+          <Text style={styles.noResultsSubtitle}>
+            We couldn't find an exact match — try describing it differently.
+          </Text>
           {result.suggestedTweaks.map((tweak, i) => (
-            <Text key={i} style={styles.tweak}>💡 {tweak}</Text>
+            <View key={i} style={styles.tweakRow}>
+              <Text style={styles.tweakDot}>—</Text>
+              <Text style={styles.tweakText}>{tweak}</Text>
+            </View>
           ))}
-          <TouchableOpacity onPress={() => router.back()} style={styles.retryButton}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.retryButton} activeOpacity={0.85}>
             <Text style={styles.retryText}>Search again</Text>
           </TouchableOpacity>
         </View>
@@ -69,33 +76,50 @@ export default function ResultsScreen() {
 
       {result && !noResults && !loading && (
         <>
+          {/* Tabs */}
           <View style={styles.tabs}>
             <TouchableOpacity
               style={[styles.tab, activeTab === 'online' && styles.tabActive]}
               onPress={() => setActiveTab('online')}
+              activeOpacity={0.8}
             >
               <Text style={[styles.tabText, activeTab === 'online' && styles.tabTextActive]}>
-                Online ({result.products.length})
+                Online
               </Text>
+              {result.products.length > 0 && (
+                <View style={[styles.badge, activeTab === 'online' && styles.badgeActive]}>
+                  <Text style={[styles.badgeText, activeTab === 'online' && styles.badgeTextActive]}>
+                    {result.products.length}
+                  </Text>
+                </View>
+              )}
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.tab, activeTab === 'instore' && styles.tabActive]}
               onPress={() => setActiveTab('instore')}
+              activeOpacity={0.8}
             >
               <Text style={[styles.tabText, activeTab === 'instore' && styles.tabTextActive]}>
-                In-Store ({result.stores.length})
+                In-Store
               </Text>
+              {result.stores.length > 0 && (
+                <View style={[styles.badge, activeTab === 'instore' && styles.badgeActive]}>
+                  <Text style={[styles.badgeText, activeTab === 'instore' && styles.badgeTextActive]}>
+                    {result.stores.length}
+                  </Text>
+                </View>
+              )}
             </TouchableOpacity>
           </View>
 
           {activeTab === 'online' && (
-            result!.products.length === 0 ? (
+            result.products.length === 0 ? (
               <View style={styles.center}>
                 <Text style={styles.noResultsSubtitle}>No online results — check In-Store tab</Text>
               </View>
             ) : (
               <FlatList
-                data={result!.products}
+                data={result.products}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => <ProductCard product={item} />}
                 contentContainerStyle={styles.list}
@@ -105,13 +129,13 @@ export default function ResultsScreen() {
           )}
 
           {activeTab === 'instore' && (
-            result!.stores.length === 0 ? (
+            result.stores.length === 0 ? (
               <View style={styles.center}>
                 <Text style={styles.noResultsSubtitle}>No in-store results — check Online tab</Text>
               </View>
             ) : (
               <FlatList
-                data={result!.stores}
+                data={result.stores}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => <StoreCard store={item} />}
                 contentContainerStyle={styles.list}
@@ -126,23 +150,49 @@ export default function ResultsScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#f8f8f8' },
-  header: { flexDirection: 'row', alignItems: 'center', padding: 16, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#f0f0f0' },
-  back: { marginRight: 12 },
-  backText: { fontSize: 16, color: '#1a1a1a', fontWeight: '500' },
-  queryText: { flex: 1, fontSize: 14, color: '#666', fontStyle: 'italic' },
-  tabs: { flexDirection: 'row', backgroundColor: '#fff', paddingHorizontal: 16, borderBottomWidth: 1, borderBottomColor: '#f0f0f0' },
-  tab: { flex: 1, paddingVertical: 14, alignItems: 'center', borderBottomWidth: 2, borderBottomColor: 'transparent' },
-  tabActive: { borderBottomColor: '#1a1a1a' },
-  tabText: { fontSize: 14, color: '#999', fontWeight: '600' },
-  tabTextActive: { color: '#1a1a1a' },
-  list: { padding: 16 },
+  safe: { flex: 1, backgroundColor: '#f4f3ee' },
+
+  header: {
+    paddingHorizontal: 24, paddingTop: 8, paddingBottom: 20,
+    borderBottomWidth: 1, borderBottomColor: '#d8d3c8', backgroundColor: '#f4f3ee',
+  },
+  back: { marginBottom: 16 },
+  backText: { fontSize: 14, color: '#c96442', fontWeight: '500' },
+  eyebrow: { fontSize: 11, letterSpacing: 2.5, color: '#8a847a', fontWeight: '500', textTransform: 'uppercase', marginBottom: 4 },
+  queryText: { fontSize: 22, fontWeight: '700', color: '#191817', letterSpacing: -0.5, lineHeight: 28 },
+
+  tabs: {
+    flexDirection: 'row', backgroundColor: '#f4f3ee',
+    paddingHorizontal: 24, borderBottomWidth: 1, borderBottomColor: '#d8d3c8',
+  },
+  tab: {
+    flexDirection: 'row', alignItems: 'center', flex: 1,
+    paddingVertical: 16, justifyContent: 'center',
+    borderBottomWidth: 2, borderBottomColor: 'transparent',
+  },
+  tabActive: { borderBottomColor: '#c96442' },
+  tabText: { fontSize: 14, color: '#8a847a', fontWeight: '600' },
+  tabTextActive: { color: '#191817' },
+  badge: {
+    marginLeft: 8, backgroundColor: '#eeede6', borderRadius: 10,
+    paddingHorizontal: 7, paddingVertical: 2,
+  },
+  badgeActive: { backgroundColor: '#c96442' },
+  badgeText: { fontSize: 11, fontWeight: '700', color: '#8a847a' },
+  badgeTextActive: { color: '#f4f3ee' },
+
+  list: { padding: 24, gap: 16 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 },
-  loadingText: { marginTop: 16, fontSize: 16, color: '#666' },
-  errorText: { fontSize: 16, color: '#e00', textAlign: 'center' },
-  noResultsTitle: { fontSize: 20, fontWeight: '700', color: '#1a1a1a', textAlign: 'center' },
-  noResultsSubtitle: { fontSize: 15, color: '#666', textAlign: 'center', marginTop: 8, marginBottom: 16 },
-  tweak: { fontSize: 14, color: '#555', marginBottom: 8 },
-  retryButton: { backgroundColor: '#1a1a1a', borderRadius: 12, padding: 14, marginTop: 16, paddingHorizontal: 32 },
-  retryText: { color: '#fff', fontSize: 15, fontWeight: '600' },
+  loadingText: { marginTop: 16, fontSize: 15, color: '#5a554e' },
+  errorText: { fontSize: 15, color: '#a53e2a', textAlign: 'center', marginBottom: 24 },
+  noResultsTitle: { fontSize: 22, fontWeight: '700', color: '#191817', textAlign: 'center', marginBottom: 8 },
+  noResultsSubtitle: { fontSize: 15, color: '#5a554e', textAlign: 'center', lineHeight: 22 },
+  tweakRow: { flexDirection: 'row', marginTop: 12, paddingHorizontal: 16 },
+  tweakDot: { fontSize: 14, color: '#c96442', marginRight: 8 },
+  tweakText: { fontSize: 14, color: '#5a554e', flex: 1, lineHeight: 20 },
+  retryButton: {
+    marginTop: 24, backgroundColor: '#c96442', borderRadius: 6,
+    paddingVertical: 12, paddingHorizontal: 28,
+  },
+  retryText: { color: '#f4f3ee', fontSize: 14, fontWeight: '600' },
 });

@@ -4,25 +4,31 @@ import { Store } from '../types';
 interface Props { store: Store; }
 
 export function StoreCard({ store }: Props) {
+  const openDirections = () => {
+    if (store.mapsUrl) Linking.openURL(store.mapsUrl).catch(() => {});
+  };
+
   return (
     <View style={styles.card}>
-      <View style={styles.logoContainer}>
+      <View style={styles.logoWrap}>
         {store.logoUrl ? (
-          <Image source={{ uri: store.logoUrl }} style={styles.logo} />
+          <Image source={{ uri: store.logoUrl }} style={styles.logo} resizeMode="contain" />
         ) : (
-          <View style={[styles.logo, styles.logoFallback]}>
-            <Text style={styles.logoFallbackText}>{store.name[0]}</Text>
+          <View style={styles.logoFallback}>
+            <Text style={styles.logoInitial}>{store.name.charAt(0)}</Text>
           </View>
         )}
       </View>
-      <View style={styles.info}>
-        <Text style={styles.name}>{store.name}</Text>
-        {store.mallLocation && <Text style={styles.location}>📍 {store.mallLocation}</Text>}
-        {store.matchReason && <Text style={styles.reason}>{store.matchReason}</Text>}
+      <View style={styles.body}>
+        <Text style={styles.name} numberOfLines={1}>{store.name}</Text>
+        {store.mallLocation && (
+          <Text style={styles.location}>📍 {store.mallLocation}</Text>
+        )}
+        <Text style={styles.reason} numberOfLines={2}>{store.matchReason}</Text>
       </View>
       {store.mapsUrl && (
-        <TouchableOpacity style={styles.button} onPress={() => Linking.openURL(store.mapsUrl!).catch(() => {})}>
-          <Text style={styles.buttonText}>Directions</Text>
+        <TouchableOpacity style={styles.dirBtn} onPress={openDirections} activeOpacity={0.85}>
+          <Text style={styles.dirBtnText}>Directions</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -30,15 +36,38 @@ export function StoreCard({ store }: Props) {
 }
 
 const styles = StyleSheet.create({
-  card: { flexDirection: 'row', padding: 12, borderRadius: 12, backgroundColor: '#fff', marginBottom: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 4, elevation: 2, alignItems: 'center' },
-  logoContainer: { marginRight: 12 },
-  logo: { width: 48, height: 48, borderRadius: 8 },
-  logoFallback: { backgroundColor: '#f0f0f0', alignItems: 'center', justifyContent: 'center' },
-  logoFallbackText: { fontSize: 20, fontWeight: '700', color: '#666' },
-  info: { flex: 1 },
-  name: { fontSize: 15, fontWeight: '700', color: '#1a1a1a' },
-  location: { fontSize: 12, color: '#888', marginTop: 2 },
-  reason: { fontSize: 12, color: '#666', marginTop: 4, fontStyle: 'italic' },
-  button: { backgroundColor: '#1a1a1a', borderRadius: 8, paddingVertical: 8, paddingHorizontal: 10, marginLeft: 8 },
-  buttonText: { color: '#fff', fontSize: 11, fontWeight: '600' },
+  card: {
+    backgroundColor: '#eeede6',
+    borderRadius: 8,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logoWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 8,
+    backgroundColor: '#f4f3ee',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 14,
+    borderWidth: 1,
+    borderColor: '#d8d3c8',
+    overflow: 'hidden',
+  },
+  logo: { width: 36, height: 36 },
+  logoFallback: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
+  logoInitial: { fontSize: 18, fontWeight: '700', color: '#5a554e' },
+  body: { flex: 1 },
+  name: { fontSize: 15, fontWeight: '700', color: '#191817', marginBottom: 2 },
+  location: { fontSize: 12, color: '#5a554e', marginBottom: 4 },
+  reason: { fontSize: 12, color: '#8a847a', lineHeight: 16 },
+  dirBtn: {
+    backgroundColor: '#191817',
+    borderRadius: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginLeft: 12,
+  },
+  dirBtnText: { color: '#f4f3ee', fontSize: 12, fontWeight: '600' },
 });

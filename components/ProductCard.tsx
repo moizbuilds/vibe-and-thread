@@ -4,32 +4,82 @@ import { Product } from '../types';
 interface Props { product: Product; }
 
 export function ProductCard({ product }: Props) {
+  const openLink = () => {
+    Linking.openURL(product.productUrl).catch(() => {});
+  };
+
   return (
     <View style={styles.card}>
-      <Image source={{ uri: product.imageUrl }} style={styles.image} defaultSource={require('../assets/placeholder.png')} />
-      <View style={styles.info}>
+      <Image
+        source={{ uri: product.imageUrl }}
+        style={styles.image}
+        resizeMode="cover"
+      />
+      <View style={styles.body}>
         <Text style={styles.store}>{product.store.toUpperCase()}</Text>
         <Text style={styles.name} numberOfLines={2}>{product.name}</Text>
-        <Text style={styles.price}>QAR {product.price}</Text>
-        {product.inStoreLocation && (
-          <Text style={styles.location}>📍 {product.inStoreLocation}</Text>
-        )}
+        <View style={styles.footer}>
+          <Text style={styles.price}>QAR {product.price}</Text>
+          <TouchableOpacity style={styles.viewBtn} onPress={openLink} activeOpacity={0.85}>
+            <Text style={styles.viewBtnText}>View →</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      <TouchableOpacity style={styles.button} onPress={() => Linking.openURL(product.productUrl).catch(() => {})}>
-        <Text style={styles.buttonText}>View</Text>
-      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { flexDirection: 'row', padding: 12, borderRadius: 12, backgroundColor: '#fff', marginBottom: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 4, elevation: 2 },
-  image: { width: 80, height: 100, borderRadius: 8, backgroundColor: '#f0f0f0' },
-  info: { flex: 1, marginLeft: 12, justifyContent: 'space-between' },
-  store: { fontSize: 10, color: '#999', fontWeight: '700', letterSpacing: 1 },
-  name: { fontSize: 14, fontWeight: '600', color: '#1a1a1a', marginTop: 4 },
-  price: { fontSize: 15, fontWeight: '700', color: '#1a1a1a', marginTop: 4 },
-  location: { fontSize: 11, color: '#888', marginTop: 2 },
-  button: { backgroundColor: '#1a1a1a', borderRadius: 8, padding: 8, alignSelf: 'center', marginLeft: 8 },
-  buttonText: { color: '#fff', fontSize: 12, fontWeight: '600' },
+  card: {
+    backgroundColor: '#eeede6',
+    borderRadius: 8,
+    overflow: 'hidden',
+    flexDirection: 'row',
+  },
+  image: {
+    width: 110,
+    height: 130,
+    backgroundColor: '#d8d3c8',
+  },
+  body: {
+    flex: 1,
+    padding: 16,
+    justifyContent: 'space-between',
+  },
+  store: {
+    fontSize: 10,
+    letterSpacing: 2,
+    color: '#8a847a',
+    fontWeight: '600',
+    marginBottom: 6,
+  },
+  name: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#191817',
+    lineHeight: 20,
+    flex: 1,
+  },
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 12,
+  },
+  price: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#191817',
+  },
+  viewBtn: {
+    backgroundColor: '#c96442',
+    borderRadius: 4,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+  },
+  viewBtnText: {
+    color: '#f4f3ee',
+    fontSize: 13,
+    fontWeight: '600',
+  },
 });

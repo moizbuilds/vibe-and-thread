@@ -6,7 +6,9 @@
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "logs": "firebase functions:log",
+    "scrape": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/scrape-local.ts",
+    "scrape:store": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/scrape-local.ts --store"
   },
   "engines": {
     "node": "20"
@@ -22,6 +24,8 @@
     "puppeteer-core": "^21.11.0"
   },
   "devDependencies": {
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.3.3"
   },
   "private": true

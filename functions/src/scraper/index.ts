@@ -72,7 +72,7 @@ async function scrapeOneStore(store: StoreConfig): Promise<ScrapeLog> {
 
 // Runs daily at 23:00 UTC (2am Qatar time)
 export const scrapeAllStores = onSchedule(
-  { schedule: '0 23 * * *', region: 'us-central1', timeoutSeconds: 3600, memory: '1GiB' },
+  { schedule: '0 23 * * *', region: 'us-central1', timeoutSeconds: 1800, memory: '1GiB' },
   async () => {
     console.log('[scraper] Daily scrape started');
     for (const store of STORES) {
